@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./../globals.css";
 
 import BottomNavBar from "@/components/common/BottomNavBar";
+import Header from "@/components/common/header";
 
 // 전역 메타데이터 정의
 export const metadata: Metadata = {
@@ -18,6 +19,7 @@ export default function RootLayout({
 }>) {
   return (
     <div className="flex flex-col min-h-screen">
+      <Header />
       {/* 메인 콘텐츠 영역 */}
       {/*
             flex-grow: 남은 공간 채우기
@@ -25,7 +27,7 @@ export default function RootLayout({
             max-w-screen-xl mx-auto: 데스크톱에서 최대 너비 제한 및 중앙 정렬
             p-4 md:p-8: 화면 크기에 따라 패딩 조절
           */}
-      <main className="flex-grow w-full max-w-screen-xl mx-auto  md:p-8 pb-[72px]">
+      <main className="flex-grow w-full max-w-screen-xl px-5 md:p-8 py-[72px]">
         {children}
       </main>
       <BottomNavBar />
