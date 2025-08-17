@@ -1,3 +1,9 @@
+"use client";
+import Header from "@/components/common/header";
 export default function SettingsProfilePage() {
-  return <div>Settings Profile Page</div>;
+  return (
+    <>
+      <Header />
+    </>
+  );
 }
