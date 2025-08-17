@@ -1,0 +1,28 @@
+@import "tailwindcss";
+/* 기본적으로 모바일 (작은 화면) 기준 */
+html {
+  font-size: 16px; /* 1rem = 16px */
+}
+
+/* 태블릿 이상 (예: 768px 이상) */
+@media (min-width: 768px) {
+  html {
+    font-size: 17px; /* 태블릿에서는 약간 키움 */
+  }
+}
+
+/* 데스크톱 이상 (예: 1024px 이상) */
+@media (min-width: 1024px) {
+  html {
+    font-size: 18px; /* 데스크톱에서는 더 키움 */
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  /* 웹 폰트를 최적화하는 Next.js의 next/font 사용 권장 */
+  font-family: "Pretendard-Regular", sans-serif;
+  /* 화면 스크롤 시 부드러운 스크롤 */
+  scroll-behavior: smooth;
+}
