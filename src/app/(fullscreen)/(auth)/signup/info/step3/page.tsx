@@ -15,7 +15,7 @@ export default function SignupInfoPage() {
   const handleNext = () => {
     // 여기에 다음 단계로 넘어가는 로직을 추가하세요.
     // 예를 들어, 입력된 정보를 검증하고 다음 페이지로 이동할 수 있습니다.
-    router.push("/signup/info/step3");
+    router.push("/");
   };
   useEffect(() => {
     // 이름과 이메일(또는 휴대폰 번호)이 모두 비어있지 않으면 폼이 유효하다고 판단
@@ -180,7 +180,7 @@ export default function SignupInfoPage() {
           >
             다음
           </button>
-        </div>{" "}
+        </div>
       </main>
     </div>
   );
