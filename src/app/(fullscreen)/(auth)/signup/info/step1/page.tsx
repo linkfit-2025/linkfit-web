@@ -36,7 +36,7 @@ export default function SignupInfoPage() {
   return (
     <div>
       <Header />
-      <main className="px-[20px]">
+      <main className="px-[20px] pt-[92px]">
         <h1 className="mb-4">본인 확인을 위해 정보를 입력해 주세요.</h1>
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-2">
