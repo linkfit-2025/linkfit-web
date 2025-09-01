@@ -11,10 +11,8 @@ declare global {
   }
 }
 
-export const Timer = () => {
+export const Timer = ({ restSeconds }: { restSeconds: number }) => {
   const [remainingMs, setRemainingMs] = useState(5000); // 밀리초
-  const [inputMinutes, setInputMinutes] = useState("0");
-  const [inputSeconds, setInputSeconds] = useState("5");
   const [totalMs, setTotalMs] = useState(5000); // 총 시간
   const [isRunning, setIsRunning] = useState(false);
 
@@ -23,9 +21,7 @@ export const Timer = () => {
 
   // 타이머 시작
   const startTimer = () => {
-    const totalInputMs =
-      (parseInt(inputMinutes || "0") * 60 + parseInt(inputSeconds || "0")) *
-      1000;
+    const totalInputMs = restSeconds * 1000;
     if (totalInputMs <= 0) {
       alert("휴식 시간은 0초보다 길게 설정해주세요!");
       return;
@@ -80,11 +76,9 @@ export const Timer = () => {
   // 타이머 초기화
   const resetTimer = () => {
     stopTimer();
-    const initialMs = 5000; // 기본 5초
+    const initialMs = restSeconds; // 기본 5초
     setRemainingMs(initialMs);
     setTotalMs(initialMs);
-    setInputMinutes("0");
-    setInputSeconds("5");
   };
 
   // 남은 시간 변경 버튼 (+/-)
@@ -115,7 +109,7 @@ export const Timer = () => {
 
   useEffect(() => {
     startTimer();
-  }, []);
+  }, [restSeconds]);
   // 언마운트 시 rAF 정리
   useEffect(() => {
     return () => stopTimer();
@@ -133,7 +127,7 @@ export const Timer = () => {
   };
 
   return (
-    <div className="flex flex-col w-full px-5 h-[50%] min-h-[375px] justify-between items-center fixed bottom-0 bg-white left-0 right-0 pt-5 z-50 border-t border-[#d9d9d9]">
+    <div className="flex flex-col w-full px-5 h-[375px] min-h-[375px] justify-between items-center fixed bottom-0 bg-white left-0 right-0 pt-5 z-50 border-t border-[#d9d9d9]">
       {/* +/- 버튼 */}
       <div className="w-full flex justify-between">
         <button
