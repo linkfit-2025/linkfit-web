@@ -133,20 +133,20 @@ export const Timer = () => {
   };
 
   return (
-    <div className="flex flex-col w-full px-5 h-[50%] min-h-[375px] justify-center items-center fixed bottom-[72px] bg-white left-0 right-0 pt-5">
+    <div className="flex flex-col w-full px-5 h-[50%] min-h-[375px] justify-between items-center fixed bottom-0 bg-white left-0 right-0 pt-5 z-50 border-t border-[#d9d9d9]">
       {/* +/- 버튼 */}
       <div className="w-full flex justify-between">
         <button
-          onClick={() => changeSeconds(-15)}
+          onClick={() => changeSeconds(-10)}
           className="flex justify-center items-center w-[37px] h-[33px] border border-[#d9d9d9] rounded-[8px]"
         >
-          -15s
+          -10s
         </button>
         <button
-          onClick={() => changeSeconds(15)}
+          onClick={() => changeSeconds(10)}
           className="flex justify-center items-center w-[37px] h-[33px] border border-[#d9d9d9] rounded-[8px]"
         >
-          +15s
+          +10s
         </button>
       </div>
 
@@ -165,7 +165,7 @@ export const Timer = () => {
         </div>
       </div>
 
-      {/* 입력창 */}
+      {/* 입력창
       {!isRunning && remainingMs === 0 && (
         <div
           style={{
@@ -212,7 +212,7 @@ export const Timer = () => {
             초
           </span>
         </div>
-      )}
+      )} */}
 
       {/* 리셋 버튼 */}
       <div

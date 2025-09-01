@@ -33,12 +33,22 @@ const Excercise = () => {
       </div>
       <div className="flex flex-col gap-[8px]">
         <div className="flex items-center px-2.5 justify-between h-[45px] border border-[#d9d9d9] rounded-[8px]">
-          <div>버튼</div>
+          <button className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400">
+            <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
+          </button>
           <div>1세트</div>
           <div>120KG</div>
           <div>12회</div>
         </div>
         <div className="flex items-center px-2.5 justify-between h-[45px] border border-[#d9d9d9] rounded-[8px]">
+          {/* <button
+        onClick={() => setChecked(!checked)}
+        className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400"
+      >
+        {checked && (
+          <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
+        )}
+      </button> */}
           <div>버튼</div>
           <div>1세트</div>
           <div>120KG</div>
