@@ -11,7 +11,13 @@ declare global {
   }
 }
 
-export const Timer = ({ restSeconds }: { restSeconds: number }) => {
+export const Timer = ({
+  restSeconds,
+  nextExercise,
+}: {
+  restSeconds: number | undefined;
+  nextExercise: () => void;
+}) => {
   const [remainingMs, setRemainingMs] = useState(5000); // 밀리초
   const [totalMs, setTotalMs] = useState(5000); // 총 시간
   const [isRunning, setIsRunning] = useState(false);
@@ -229,6 +235,7 @@ export const Timer = ({ restSeconds }: { restSeconds: number }) => {
           />
         </button>
         <button
+          onClick={nextExercise}
           className="flex items-center justify-center rounded-lg h-[42px] border border-[#d9d9d9]"
           style={{ flex: 1 }}
         >

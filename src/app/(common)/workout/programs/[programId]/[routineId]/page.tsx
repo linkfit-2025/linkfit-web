@@ -5,13 +5,28 @@ import Timer from "@/components/common/Timer";
 // export default function RoutinePage() {
 //   return <div>Workout Record Page for program </div>;
 // }
+
+// 한 세트 정보 타입
+export interface ExerciseSet {
+  id: number;
+  weight: number;
+  reps: number;
+}
+
+// 운동 정보 타입
+export interface Exercise {
+  id: number;
+  name: string;
+  restSeconds: number;
+  sets: ExerciseSet[];
+}
 export default function RoutinePage({
   params,
 }: {
   params: { routineId: number };
 }) {
   const TIMER_HEIGHT = 375;
-  const [exercises, setExercises] = useState([
+  const [exercises, setExercises] = useState<Exercise[]>([
     {
       id: 1,
       name: "스쿼트",
@@ -35,6 +50,28 @@ export default function RoutinePage({
       id: 3,
       name: "데드리프트",
       restSeconds: 120,
+      sets: [
+        { id: 1, weight: 120, reps: 12 },
+        { id: 2, weight: 120, reps: 12 },
+        { id: 3, weight: 120, reps: 12 },
+      ],
+    },
+    {
+      id: 4,
+      name: "플라이",
+      restSeconds: 50,
+      sets: [
+        { id: 1, weight: 120, reps: 12 },
+        { id: 2, weight: 120, reps: 12 },
+        { id: 3, weight: 120, reps: 12 },
+        { id: 4, weight: 120, reps: 12 },
+        { id: 5, weight: 120, reps: 12 },
+      ],
+    },
+    {
+      id: 5,
+      name: "레그 익스텐션",
+      restSeconds: 40,
       sets: [
         { id: 1, weight: 120, reps: 12 },
         { id: 2, weight: 120, reps: 12 },
@@ -73,11 +110,37 @@ export default function RoutinePage({
       if (el && wrapperRef.current) {
         // wrapperRef 내부 스크롤
         wrapperRef.current.scrollTo({
-          top: el.offsetTop - 66,
+          top: el.offsetTop - 56,
           behavior: "smooth",
         });
       }
     }, 50); // 렌더 후 refs 적용
+  };
+
+  const nextExercise = () => {
+    const currentIndex = exercises.findIndex(
+      (item) => item.id === currentExerciseId
+    );
+
+    if (currentIndex !== -1 && currentIndex + 1 < exercises.length) {
+      const nextExerciseId = exercises[currentIndex + 1].id;
+      handleExerciseClick(nextExerciseId);
+    }
+  };
+
+  const addSets = (id: number) => {
+    setExercises((prevExercises) => {
+      return prevExercises.map((exercise) => {
+        if (exercise.id !== id) return exercise;
+
+        const lastSet = exercise.sets[exercise.sets.length - 1];
+        const newSet = { ...lastSet, id: lastSet.id + 1 }; // 새 세트 ID 증가
+        return {
+          ...exercise,
+          sets: [...exercise.sets, newSet], // 새 배열 생성
+        };
+      });
+    });
   };
   return (
     <div>
@@ -91,9 +154,10 @@ export default function RoutinePage({
           }px)`,
         }}
       >
-        <div className="flex flex-col gap-[10px] pt-5">
+        <div className="flex flex-col gap-[10px]  bg-[#F7F8F9]">
           {exercises.map((exercise) => (
             <div
+              className="bg-white"
               key={exercise.id}
               ref={(el) => {
                 if (el) exerciseRefs.current.set(exercise.id, el);
@@ -103,6 +167,7 @@ export default function RoutinePage({
                 {...exercise}
                 isSelected={exercise.id === currentExerciseId}
                 onClick={() => handleExerciseClick(exercise.id)}
+                addSets={addSets}
               />
             </div>
           ))}
@@ -114,6 +179,7 @@ export default function RoutinePage({
               exercises.find((item) => item.id === currentExerciseId)
                 ?.restSeconds
             }
+            nextExercise={nextExercise}
           />
         )}
       </div>
