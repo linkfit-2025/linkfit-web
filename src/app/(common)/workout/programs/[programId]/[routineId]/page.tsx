@@ -1,5 +1,8 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import { useParams } from "next/navigation";
+
+import axios from "axios";
 import Exercise from "@/components/common/Exercise";
 import Timer from "@/components/common/Timer";
 // export default function RoutinePage() {
@@ -20,65 +23,11 @@ export interface Exercise {
   restSeconds: number;
   sets: ExerciseSet[];
 }
-export default function RoutinePage({
-  params,
-}: {
-  params: { routineId: number };
-}) {
+export default function RoutinePage() {
+  const { routineId } = useParams();
   const TIMER_HEIGHT = 375;
-  const [exercises, setExercises] = useState<Exercise[]>([
-    {
-      id: 1,
-      name: "스쿼트",
-      restSeconds: 60,
-      sets: [
-        { id: 1, weight: 120, reps: 12 },
-        { id: 2, weight: 120, reps: 12 },
-        { id: 3, weight: 120, reps: 12 },
-      ],
-    },
-    {
-      id: 2,
-      name: "벤치프레스",
-      restSeconds: 90,
-      sets: [
-        { id: 1, weight: 80, reps: 10 },
-        { id: 2, weight: 80, reps: 10 },
-      ],
-    },
-    {
-      id: 3,
-      name: "데드리프트",
-      restSeconds: 120,
-      sets: [
-        { id: 1, weight: 120, reps: 12 },
-        { id: 2, weight: 120, reps: 12 },
-        { id: 3, weight: 120, reps: 12 },
-      ],
-    },
-    {
-      id: 4,
-      name: "플라이",
-      restSeconds: 50,
-      sets: [
-        { id: 1, weight: 120, reps: 12 },
-        { id: 2, weight: 120, reps: 12 },
-        { id: 3, weight: 120, reps: 12 },
-        { id: 4, weight: 120, reps: 12 },
-        { id: 5, weight: 120, reps: 12 },
-      ],
-    },
-    {
-      id: 5,
-      name: "레그 익스텐션",
-      restSeconds: 40,
-      sets: [
-        { id: 1, weight: 120, reps: 12 },
-        { id: 2, weight: 120, reps: 12 },
-        { id: 3, weight: 120, reps: 12 },
-      ],
-    },
-  ]);
+  const [loading, setLoading] = useState(true);
+  const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentExerciseId, setCurrentExerciseId] = useState<number | null>(
     null
   );
@@ -86,8 +35,27 @@ export default function RoutinePage({
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const fetchExercises = async () => {
+      try {
+        const { data } = await axios.get<Exercise[]>(
+          `/api/exercises/${routineId}`
+        );
+        console.log("data", data);
+        setExercises(data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchExercises();
+  }, [routineId]);
+
+  useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       // wrapperRef 영역 안이면 클릭 무시
+      // contains 메소드는 Node || null 타입을 받지만 event.target의 타입은 EventTarget
+      // 따라서 Node로 타입 단언
       if (
         wrapperRef.current &&
         !wrapperRef.current.contains(event.target as Node)
@@ -142,6 +110,8 @@ export default function RoutinePage({
       });
     });
   };
+
+  if (loading) return <div>Loading...</div>;
   return (
     <div>
       {/* Exercise + Timer 영역만 감싸는 ref */}

@@ -36,8 +36,7 @@ export default function RootLayout({
           'children'은 현재 라우트에서 렌더링될 페이지 또는 중첩 레이아웃의 콘텐츠를 나타냅니다.
           예를 들어, Home 페이지(app/page.tsx)의 내용이 여기에 들어오게 됩니다.
         */}
-        <MswProvider />
-        {children}
+        <MswProvider>{children}</MswProvider>
       </body>
     </html>
   );
