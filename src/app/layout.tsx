@@ -5,6 +5,7 @@
 import type { Metadata } from "next";
 // 전역 CSS 파일을 불러옵니다. 여기에 Tailwind CSS 등의 기본 스타일이 포함됩니다.
 import "./globals.css";
+import MswProvider from "@/components/common/MswProvider";
 
 // 2. 이 웹사이트의 전반적인 메타데이터를 정의합니다.
 // 브라우저 탭에 표시되는 제목, 검색 엔진에 노출되는 설명 등을 설정할 수 있어요.
@@ -35,6 +36,7 @@ export default function RootLayout({
           'children'은 현재 라우트에서 렌더링될 페이지 또는 중첩 레이아웃의 콘텐츠를 나타냅니다.
           예를 들어, Home 페이지(app/page.tsx)의 내용이 여기에 들어오게 됩니다.
         */}
+        <MswProvider />
         {children}
       </body>
     </html>
