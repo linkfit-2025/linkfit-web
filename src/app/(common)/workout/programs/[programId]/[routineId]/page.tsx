@@ -5,9 +5,6 @@ import { useParams } from "next/navigation";
 import axios from "axios";
 import Exercise from "@/components/common/Exercise";
 import Timer from "@/components/common/Timer";
-// export default function RoutinePage() {
-//   return <div>Workout Record Page for program </div>;
-// }
 
 // 한 세트 정보 타입
 export interface ExerciseSet {
@@ -31,6 +28,10 @@ export default function RoutinePage() {
   const [currentExerciseId, setCurrentExerciseId] = useState<number | null>(
     null
   );
+  const [completedSetIds, setCompletedSetIds] = useState<Set<number>>(
+    new Set()
+  );
+
   const exerciseRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -69,6 +70,19 @@ export default function RoutinePage() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+  const toggleSetCompletion = (setId: number) => {
+    setCompletedSetIds((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(setId)) {
+        newSet.delete(setId);
+      } else {
+        newSet.add(setId);
+      }
+      console.log("exercises", exercises);
+      return newSet;
+    });
+  };
+
   const handleExerciseClick = (id: number) => {
     setCurrentExerciseId(id);
 
@@ -111,6 +125,21 @@ export default function RoutinePage() {
     });
   };
 
+  const handleSave = async () => {
+    const completedSets = exercises.flatMap((exercise) =>
+      exercise.sets.filter((set) => completedSetIds.has(set.id))
+    );
+
+    // 실제 API 호출 (예시)
+    await fetch("/api/save-sets", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(completedSets),
+    });
+
+    console.log("저장한 세트:", completedSets);
+  };
+
   if (loading) return <div>Loading...</div>;
   return (
     <div>
@@ -135,8 +164,10 @@ export default function RoutinePage() {
             >
               <Exercise
                 {...exercise}
+                completedSetIds={completedSetIds}
                 isSelected={exercise.id === currentExerciseId}
-                onClick={() => handleExerciseClick(exercise.id)}
+                onClickExercise={handleExerciseClick}
+                onClickSet={toggleSetCompletion}
                 addSets={addSets}
               />
             </div>
