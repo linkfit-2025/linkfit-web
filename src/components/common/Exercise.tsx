@@ -16,7 +16,11 @@ interface ExerciseProps {
   isSelected?: boolean;
   onClickExercise: (id: number) => void;
   addSets: (id: number) => void;
-  onClickSet: (setId: number) => void;
+  onClickSetCheckBtn: (setId: number) => void;
+  onUpdateSet: (
+    setId: number,
+    values: { weight: number; reps: number }
+  ) => void;
 }
 const Excercise = ({
   id,
@@ -26,13 +30,52 @@ const Excercise = ({
   isSelected,
   onClickExercise,
   addSets,
-  onClickSet,
+  onClickSetCheckBtn,
+  onUpdateSet,
 }: ExerciseProps) => {
   const [rotated, setRotated] = useState(false);
+  const [tempWeight, setTempWeight] = useState("");
+  const [tempReps, setTempReps] = useState("");
+  const [editingSetId, setEditingSetId] = useState<number | null>(null);
+  const [editingTarget, setEditingTarget] = useState<{
+    setId: number | null;
+    field: "weight" | "reps" | null;
+  }>({ setId: null, field: null });
 
-  const [checkedSets, setCheckedSets] = useState<boolean[]>(
-    sets.map(() => false)
-  );
+  const weightInputRef = useRef<HTMLInputElement | null>(null);
+  const repsInputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleEditStart = (set: SetItem, field: "weight" | "reps") => {
+    setEditingSetId(set.id);
+    setTempWeight(String(set.weight));
+    setTempReps(String(set.reps));
+    setEditingTarget({ setId: set.id, field });
+
+    console.log("set", set, editingSetId);
+  };
+
+  useEffect(() => {
+    console.log("editingTarget", editingTarget);
+    if (editingTarget.setId !== null) {
+      if (editingTarget.field === "weight") {
+        weightInputRef.current?.focus();
+      } else if (editingTarget.field === "reps") {
+        repsInputRef.current?.focus();
+      }
+    }
+  }, [editingTarget]);
+
+  const handleEditEnd = () => {
+    if (editingSetId) {
+      onUpdateSet(editingSetId, {
+        weight: Number(tempWeight),
+        reps: Number(tempReps),
+      });
+    }
+    setEditingSetId(null);
+    setTempWeight("");
+    setTempReps("");
+  };
 
   const toggleChecked = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -40,8 +83,9 @@ const Excercise = ({
     id: number
   ) => {
     e.stopPropagation();
-    onClickSet(id);
+    onClickSetCheckBtn(id);
   };
+
   return (
     <div onClick={() => onClickExercise(id)} className="py-5 px-5">
       <div className="flex items-center h-[48px] mb-3 ">
@@ -84,22 +128,71 @@ const Excercise = ({
         <div className="text-sm  flex flex-col gap-[8px]">
           {sets.map((set, index) => {
             const isCompleted = completedSetIds.has(set.id);
+            const isEditing = editingSetId === set.id;
+
             return (
               <div
                 key={set?.id}
                 className="flex items-center px-2.5 justify-between h-[45px] border border-[#d9d9d9] rounded-[8px]"
               >
-                <div
-                  onClick={(e) => toggleChecked(e, index, set.id)}
-                  className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400"
-                >
-                  {isCompleted && (
-                    <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
-                  )}
+                {/* 체크박스 */}
+                <div style={{ flex: 1 }}>
+                  <div
+                    onClick={(e) => toggleChecked(e, index, set.id)}
+                    className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400"
+                  >
+                    {isCompleted && (
+                      <div className="w-2.5 h-2.5 bg-blue-500 rounded-full" />
+                    )}
+                  </div>
                 </div>
-                <div>{index + 1}세트</div>
-                <div>{set?.weight}KG</div>
-                <div>{set?.reps}회</div>
+                <div style={{ flex: 1 }}>{index + 1}세트</div>
+                {/* 무게 */}
+                <div
+                  className="flex"
+                  style={{ flex: 1 }}
+                  onClick={() => !isEditing && handleEditStart(set, "weight")}
+                >
+                  {isEditing ? (
+                    <input
+                      ref={weightInputRef}
+                      className="w-[25px] border border-gray-300 text-center"
+                      type="number"
+                      value={tempWeight}
+                      onChange={(e) => setTempWeight(e.target.value)}
+                      onBlur={handleEditEnd}
+                      onKeyDown={(e) => e.key === "Enter" && handleEditEnd()}
+                    />
+                  ) : (
+                    <span className="inline-block w-[25px] text-center">
+                      {set.weight}
+                    </span>
+                  )}
+                  &nbsp;KG
+                </div>
+                {/* 횟수 */}
+                <div
+                  className="flex"
+                  style={{ flex: 1 }}
+                  onClick={() => handleEditStart(set, "reps")}
+                >
+                  {isEditing ? (
+                    <input
+                      ref={repsInputRef}
+                      className="w-[25px] border border-gray-300 text-center"
+                      type="number"
+                      value={tempReps}
+                      onChange={(e) => setTempReps(e.target.value)}
+                      onBlur={handleEditEnd}
+                      onKeyDown={(e) => e.key === "Enter" && handleEditEnd()}
+                    />
+                  ) : (
+                    <span className="inline-block w-[25px] text-center">
+                      {set.reps}
+                    </span>
+                  )}
+                  &nbsp;회
+                </div>
               </div>
             );
           })}

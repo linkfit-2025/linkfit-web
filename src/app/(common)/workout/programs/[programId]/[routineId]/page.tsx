@@ -31,7 +31,6 @@ export default function RoutinePage() {
   const [completedSetIds, setCompletedSetIds] = useState<Set<number>>(
     new Set()
   );
-
   const exerciseRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const wrapperRef = useRef<HTMLDivElement>(null);
 
@@ -125,6 +124,20 @@ export default function RoutinePage() {
     });
   };
 
+  const handleUpdateSet = (
+    setId: number,
+    values: { weight: number; reps: number }
+  ) => {
+    setExercises((prev) =>
+      prev.map((exercise) => ({
+        ...exercise,
+        sets: exercise.sets.map((set) =>
+          set.id === setId ? { ...set, ...values } : set
+        ),
+      }))
+    );
+  };
+
   const handleSave = async () => {
     const completedSets = exercises.flatMap((exercise) =>
       exercise.sets.filter((set) => completedSetIds.has(set.id))
@@ -167,8 +180,9 @@ export default function RoutinePage() {
                 completedSetIds={completedSetIds}
                 isSelected={exercise.id === currentExerciseId}
                 onClickExercise={handleExerciseClick}
-                onClickSet={toggleSetCompletion}
+                onClickSetCheckBtn={toggleSetCompletion}
                 addSets={addSets}
+                onUpdateSet={handleUpdateSet}
               />
             </div>
           ))}
