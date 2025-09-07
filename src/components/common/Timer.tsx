@@ -10,25 +10,37 @@ declare global {
     };
   }
 }
-
 export const Timer = ({
   startTrigger,
   restSeconds,
   nextExercise,
+  showType = "bar",
+  onShowTypeChange,
 }: {
   startTrigger: number;
   restSeconds: number | undefined;
   nextExercise: () => void;
+  showType?: "bar" | "full";
+  onShowTypeChange?: (type: "bar" | "full") => void;
 }) => {
+  console.log(restSeconds);
   const isFirstRender = useRef(true);
 
   const [remainingMs, setRemainingMs] = useState(5000); // 밀리초
   const [totalMs, setTotalMs] = useState(5000); // 총 시간
   const [isRunning, setIsRunning] = useState(false);
+  const [internalShowType, setInternalShowType] = useState<"full" | "bar">(
+    showType
+  );
 
+  const wrapperRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
   const prevTimeRef = useRef<number | null>(null);
 
+  const changeShowType = (type: "full" | "bar") => {
+    setInternalShowType(type);
+    onShowTypeChange?.(type);
+  };
   // 타이머 시작
   const startTimer = () => {
     const totalInputMs = restSeconds * 1000;
@@ -121,6 +133,7 @@ export const Timer = ({
     console.log("restSeconds changed", restSeconds);
     if (startTrigger === 0) return;
     startTimer();
+    changeShowType("full");
   }, [startTrigger]);
   // 언마운트 시 rAF 정리
   useEffect(() => {
@@ -138,40 +151,79 @@ export const Timer = ({
     )}`;
   };
 
-  return (
-    <div className="flex flex-col w-full px-5 h-[375px] min-h-[375px] justify-between items-center fixed bottom-0 bg-white left-0 right-0 pt-5 z-50 border-t border-[#d9d9d9]">
-      {/* +/- 버튼 */}
-      <div className="w-full flex justify-between">
-        <button
-          onClick={() => changeSeconds(-10)}
-          className="flex justify-center items-center w-[37px] h-[33px] border border-[#d9d9d9] rounded-[8px]"
-        >
-          -10s
-        </button>
-        <button
-          onClick={() => changeSeconds(10)}
-          className="flex justify-center items-center w-[37px] h-[33px] border border-[#d9d9d9] rounded-[8px]"
-        >
-          +10s
-        </button>
-      </div>
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      // wrapperRef 영역 안이면 클릭 무시
+      // contains 메소드는 Node || null 타입을 받지만 event.target의 타입은 EventTarget
+      // 따라서 Node로 타입 단언
+      if (
+        wrapperRef.current &&
+        !wrapperRef.current.contains(event.target as Node)
+      ) {
+        changeShowType("bar"); // 선택 초기화 → Timer 숨김
+      }
+    };
 
-      {/* 원형 프로그레스바 */}
-      <div
-        className="flex justify-center items-center rounded-full w-[198px] h-[198px]"
-        style={{
-          background: `conic-gradient(
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  return (
+    <div
+      ref={wrapperRef}
+      onClick={() =>
+        changeShowType(internalShowType === "bar" ? "full" : "bar")
+      }
+    >
+      {internalShowType === "bar" ? (
+        <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-[#d9d9d9] flex h-[72px] pt-2 justify-between px-5 z-50 gap-[20px] pb-5">
+          <div className="text-lg font-bold h-[42px] w-[93px] bg-[#0ea5e9] text-white rounded-lg flex items-center justify-center">
+            {formatTime(remainingMs)}
+          </div>
+          <button
+            onClick={nextExercise}
+            className="flex items-center justify-center rounded-lg h-[42px] border border-[#d9d9d9]"
+            style={{ flex: 1 }}
+          >
+            다음 운동
+          </button>
+        </div>
+      ) : (
+        <div className="flex flex-col w-full px-5 h-[375px] min-h-[375px] justify-between items-center fixed bottom-0 bg-white left-0 right-0 pt-5 z-50 border-t border-[#d9d9d9]">
+          {/* +/- 버튼 */}
+          <div className="w-full flex justify-between">
+            <button
+              onClick={() => changeSeconds(-10)}
+              className="flex justify-center items-center w-[37px] h-[33px] border border-[#d9d9d9] rounded-[8px]"
+            >
+              -10s
+            </button>
+            <button
+              onClick={() => changeSeconds(10)}
+              className="flex justify-center items-center w-[37px] h-[33px] border border-[#d9d9d9] rounded-[8px]"
+            >
+              +10s
+            </button>
+          </div>
+
+          {/* 원형 프로그레스바 */}
+          <div
+            className="flex justify-center items-center rounded-full w-[198px] h-[198px]"
+            style={{
+              background: `conic-gradient(
             #0EA5E9 ${(remainingMs / totalMs) * 100}%,
             #d9d9d9 ${(remainingMs / totalMs) * 100}% 100%
           )`,
-        }}
-      >
-        <div className="rounded-full bg-white flex justify-center items-center w-[180px] h-[180px] text-[40px] font-bold">
-          {formatTime(remainingMs)}
-        </div>
-      </div>
+            }}
+          >
+            <div className="rounded-full bg-white flex justify-center items-center w-[180px] h-[180px] text-[40px] font-bold">
+              {formatTime(remainingMs)}
+            </div>
+          </div>
 
-      {/* 입력창
+          {/* 입력창
       {!isRunning && remainingMs === 0 && (
         <div
           style={{
@@ -220,34 +272,36 @@ export const Timer = ({
         </div>
       )} */}
 
-      {/* 리셋 버튼 */}
-      <div
-        className="w-full"
-        style={{
-          display: "flex",
-          gap: "20px",
-          marginBottom: "25px",
-        }}
-      >
-        <button
-          onClick={resetTimer}
-          className="flex items-center justify-center rounded-lg bg-[#0EA5E9] w-[93px] h-[42px]"
-        >
-          <Image
-            src="/images/common/icon/reset.svg"
-            width={24}
-            height={24}
-            alt="리셋"
-          />
-        </button>
-        <button
-          onClick={nextExercise}
-          className="flex items-center justify-center rounded-lg h-[42px] border border-[#d9d9d9]"
-          style={{ flex: 1 }}
-        >
-          다음 운동
-        </button>
-      </div>
+          {/* 리셋 버튼 */}
+          <div
+            className="w-full"
+            style={{
+              display: "flex",
+              gap: "20px",
+              marginBottom: "20px",
+            }}
+          >
+            <button
+              onClick={resetTimer}
+              className="flex items-center justify-center rounded-lg bg-[#0EA5E9] w-[93px] h-[42px]"
+            >
+              <Image
+                src="/images/common/icon/reset.svg"
+                width={24}
+                height={24}
+                alt="리셋"
+              />
+            </button>
+            <button
+              onClick={nextExercise}
+              className="flex items-center justify-center rounded-lg h-[42px] border border-[#d9d9d9]"
+              style={{ flex: 1 }}
+            >
+              다음 운동
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

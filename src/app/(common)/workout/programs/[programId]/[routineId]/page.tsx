@@ -34,6 +34,8 @@ export default function RoutinePage() {
   const exerciseRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const wrapperRef = useRef<HTMLDivElement>(null);
 
+  const [showType, setShowType] = useState<"bar" | "full">("bar");
+
   const [startTrigger, setStartTrigger] = useState(0);
   useEffect(() => {
     const fetchExercises = async () => {
@@ -165,7 +167,7 @@ export default function RoutinePage() {
         className="overflow-y-auto"
         style={{
           height: `calc(100vh - 60px - ${
-            startTrigger > 0 ? TIMER_HEIGHT : 0
+            showType === "full" ? TIMER_HEIGHT : 0
           }px)`,
         }}
       >
@@ -191,16 +193,15 @@ export default function RoutinePage() {
           ))}
         </div>
 
-        {startTrigger && (
-          <Timer
-            startTrigger={startTrigger}
-            restSeconds={
-              exercises.find((item) => item.id === currentExerciseId)
-                ?.restSeconds
-            }
-            nextExercise={nextExercise}
-          />
-        )}
+        <Timer
+          startTrigger={startTrigger}
+          restSeconds={
+            exercises.find((item) => item.id === currentExerciseId)?.restSeconds
+          }
+          nextExercise={nextExercise}
+          showType={showType}
+          onShowTypeChange={(newType) => setShowType(newType)}
+        />
       </div>
     </div>
   );

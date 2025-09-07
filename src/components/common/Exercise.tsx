@@ -80,10 +80,12 @@ const Excercise = ({
   const toggleChecked = (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>,
     index: number,
-    id: number
+    exerciseId: number,
+    setId: number
   ) => {
     e.stopPropagation();
-    onClickSetCheckBtn(id);
+    onClickExercise(exerciseId);
+    onClickSetCheckBtn(setId);
   };
 
   return (
@@ -139,7 +141,7 @@ const Excercise = ({
                 {/* 체크박스 */}
                 <div style={{ flex: 1 }}>
                   <div
-                    onClick={(e) => toggleChecked(e, index, set.id)}
+                    onClick={(e) => toggleChecked(e, index, id, set.id)}
                     className="w-5 h-5 flex items-center justify-center rounded-full border border-gray-400"
                   >
                     {isCompleted && (
