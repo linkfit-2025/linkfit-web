@@ -12,12 +12,16 @@ declare global {
 }
 
 export const Timer = ({
+  startTrigger,
   restSeconds,
   nextExercise,
 }: {
+  startTrigger: number;
   restSeconds: number | undefined;
   nextExercise: () => void;
 }) => {
+  const isFirstRender = useRef(true);
+
   const [remainingMs, setRemainingMs] = useState(5000); // 밀리초
   const [totalMs, setTotalMs] = useState(5000); // 총 시간
   const [isRunning, setIsRunning] = useState(false);
@@ -114,8 +118,10 @@ export const Timer = ({
   };
 
   useEffect(() => {
+    console.log("restSeconds changed", restSeconds);
+    if (startTrigger === 0) return;
     startTimer();
-  }, [restSeconds]);
+  }, [startTrigger]);
   // 언마운트 시 rAF 정리
   useEffect(() => {
     return () => stopTimer();

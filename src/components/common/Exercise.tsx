@@ -45,7 +45,7 @@ const Excercise = ({
   const weightInputRef = useRef<HTMLInputElement | null>(null);
   const repsInputRef = useRef<HTMLInputElement | null>(null);
 
-  const handleEditStart = (set: SetItem, field: "weight" | "reps") => {
+  const handleEditStart = (set: SetItem, field: "weight" | "reps" | null) => {
     setEditingSetId(set.id);
     setTempWeight(String(set.weight));
     setTempReps(String(set.reps));
@@ -57,7 +57,7 @@ const Excercise = ({
   useEffect(() => {
     console.log("editingTarget", editingTarget);
     if (editingTarget.setId !== null) {
-      if (editingTarget.field === "weight") {
+      if (editingTarget.field === "weight" || editingTarget.field === null) {
         weightInputRef.current?.focus();
       } else if (editingTarget.field === "reps") {
         repsInputRef.current?.focus();
@@ -132,6 +132,7 @@ const Excercise = ({
 
             return (
               <div
+                onClick={() => handleEditStart(set, null)}
                 key={set?.id}
                 className="flex items-center px-2.5 justify-between h-[45px] border border-[#d9d9d9] rounded-[8px]"
               >
@@ -151,7 +152,12 @@ const Excercise = ({
                 <div
                   className="flex"
                   style={{ flex: 1 }}
-                  onClick={() => !isEditing && handleEditStart(set, "weight")}
+                  onClick={(e) => {
+                    if (!isEditing) {
+                      e.stopPropagation();
+                      handleEditStart(set, "weight");
+                    }
+                  }}
                 >
                   {isEditing ? (
                     <input
@@ -174,7 +180,12 @@ const Excercise = ({
                 <div
                   className="flex"
                   style={{ flex: 1 }}
-                  onClick={() => handleEditStart(set, "reps")}
+                  onClick={(e) => {
+                    if (!isEditing) {
+                      e.stopPropagation();
+                      handleEditStart(set, "reps");
+                    }
+                  }}
                 >
                   {isEditing ? (
                     <input

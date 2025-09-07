@@ -34,6 +34,7 @@ export default function RoutinePage() {
   const exerciseRefs = useRef<Map<number, HTMLDivElement>>(new Map());
   const wrapperRef = useRef<HTMLDivElement>(null);
 
+  const [startTrigger, setStartTrigger] = useState(0);
   useEffect(() => {
     const fetchExercises = async () => {
       try {
@@ -77,6 +78,8 @@ export default function RoutinePage() {
       } else {
         newSet.add(setId);
       }
+      setStartTrigger((t) => t + 1);
+
       console.log("exercises", exercises);
       return newSet;
     });
@@ -162,7 +165,7 @@ export default function RoutinePage() {
         className="overflow-y-auto"
         style={{
           height: `calc(100vh - 60px - ${
-            currentExerciseId ? TIMER_HEIGHT : 0
+            startTrigger > 0 ? TIMER_HEIGHT : 0
           }px)`,
         }}
       >
@@ -188,8 +191,9 @@ export default function RoutinePage() {
           ))}
         </div>
 
-        {currentExerciseId && (
+        {startTrigger && (
           <Timer
+            startTrigger={startTrigger}
             restSeconds={
               exercises.find((item) => item.id === currentExerciseId)
                 ?.restSeconds
