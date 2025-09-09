@@ -46,6 +46,7 @@ export const Timer = ({
     const totalInputMs = restSeconds * 1000;
     if (totalInputMs <= 0) {
       alert("휴식 시간은 0초보다 길게 설정해주세요!");
+      console.log("test");
       return;
     }
 
