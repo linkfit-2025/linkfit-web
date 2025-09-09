@@ -34,7 +34,7 @@ export default function SignupInfoPage() {
   return (
     <div>
       <Header />
-      <main className="px-[20px]">
+      <main className="px-[20px] pt-[92px]">
         <h1 className="mb-4">
           LinkFit 서비스 이용을 위해 기본 정보를 <br />
           입력해 주세요.

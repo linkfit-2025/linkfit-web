@@ -24,7 +24,7 @@ export default function SignupInfoPage() {
   return (
     <div>
       <Header />
-      <main className="px-[20px]">
+      <main className="px-[20px] pt-[92px]">
         <h1>회원 유형을 선택해 주세요.</h1>
         <div className="grid grid-cols-2 gap-5">
           <div
